@@ -19,6 +19,6 @@ public class ItemFactory {
             return new Item(new Orange(), quantity);
         }
 
-        throw new IllegalArgumentException("Invalid argument. " + type + "is not a valid type.");
+        throw new IllegalArgumentException("Invalid argument. " + type + " is not a valid type.");
     }
 }

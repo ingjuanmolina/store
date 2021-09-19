@@ -26,7 +26,7 @@ class OrderTest {
             order.addEntries(Collections.singletonList(invalidEntry));
         });
 
-        String expectedMessage = "Invalid argument. " + type + "is not a valid type.";
+        String expectedMessage = "Invalid argument. " + type + " is not a valid type.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
