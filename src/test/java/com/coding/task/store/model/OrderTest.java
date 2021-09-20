@@ -1,6 +1,5 @@
 package com.coding.task.store.model;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,6 +83,37 @@ class OrderTest {
         BaseGood orange = new Orange();
         BigDecimal totalOrangesValue = orange.getPrice().multiply(BigDecimal.valueOf(totalOranges));
         assertEquals(totalOrangesValue, order.getTotalValue());
+    }
+
+    @Test
+    void orderWithTwoItemsWithQuantityGreaterThanOneApplyingOffer() {
+        int totalApples = 15;
+        int totalOranges = 20;
+        Entry twoApples = new Entry("apple", totalApples);
+        Entry threeOranges = new Entry("orange", totalOranges);
+        order.addEntries(Arrays.asList(twoApples, threeOranges));
+
+        assertEquals(2, order.getTotalItems().size());
+
+        BaseGood apple = new Apple();
+        BaseGood orange = new Orange();
+
+        int appleQuantityToGetPrice = (totalApples / 3) * 2 + totalApples % 3;
+        int orangeQuantityToGetPrice = totalOranges - totalOranges / 2;
+
+        BigDecimal totalApplesValue = apple.getPrice().multiply(BigDecimal.valueOf(totalApples));
+        BigDecimal totalOrangesValue = orange.getPrice().multiply(BigDecimal.valueOf(totalOranges));
+        BigDecimal totalValue = totalApplesValue.add(totalOrangesValue);
+
+        assertEquals(totalValue, order.getTotalValue());
+
+        BigDecimal totalApplesValueWithDiscount = apple.getPrice().multiply(BigDecimal.valueOf(appleQuantityToGetPrice));
+        BigDecimal totalOrangesValueWithDiscount = orange.getPrice().multiply(BigDecimal.valueOf(orangeQuantityToGetPrice));
+        BigDecimal totalValueWithDiscount = totalApplesValueWithDiscount.add(totalOrangesValueWithDiscount);
+
+        assertEquals(totalValueWithDiscount, order.getTotalValueWithDiscount());
+
+        assertEquals(totalValue.subtract(totalValueWithDiscount), order.getTotalDiscount());
     }
 
 }
