@@ -1,5 +1,10 @@
-package com.coding.task.store.model;
+package com.coding.task.store.service;
 
+import com.coding.task.store.model.Apple;
+import com.coding.task.store.model.BaseGood;
+import com.coding.task.store.model.Entry;
+import com.coding.task.store.model.Orange;
+import com.coding.task.store.model.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,14 +12,16 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OrderTest {
-    private Order order;
+class OrderServiceTest {
+    private OrderService service;
 
     @BeforeEach
     private void init() {
-        this.order = new Order();
+        this.service = new OrderService();
     }
 
     @Test
@@ -22,7 +29,7 @@ class OrderTest {
         String type = "lemon";
         Entry invalidEntry = new Entry(type, 1);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            order.addEntries(Collections.singletonList(invalidEntry));
+            service.getOrder(Collections.singletonList(invalidEntry));
         });
 
         String expectedMessage = "Invalid argument. " + type + " is not a valid type.";
@@ -34,9 +41,9 @@ class OrderTest {
     @Test
     void anOrderWithOneAppleContainsOneItemAndTotalPriceIsAppleValue() {
         Entry oneApple = new Entry("apple", 1);
-        order.addEntries(Collections.singletonList(oneApple));
+        Order order = service.getOrder(Collections.singletonList(oneApple));
 
-        assertEquals(1, order.getTotalItems().size());
+        assertEquals(1, order.getItems().size());
         assertEquals(new Apple().getPrice(), order.getTotalValue());
     }
 
@@ -44,9 +51,9 @@ class OrderTest {
     void anOrderWithOneAppleAndOneOrangeContainsTwoItemsAndTotalPriceIsTheSumOfBothValues() {
         Entry oneApple = new Entry("apple", 1);
         Entry oneOrange = new Entry("orange", 1);
-        order.addEntries(Arrays.asList(oneApple, oneOrange));
+        Order order = service.getOrder(Arrays.asList(oneApple, oneOrange));
 
-        assertEquals(2, order.getTotalItems().size());
+        assertEquals(2, order.getItems().size());
 
         BaseGood apple = new Apple();
         BaseGood orange = new Orange();
@@ -59,9 +66,9 @@ class OrderTest {
         int totalOranges = 3;
         Entry twoApples = new Entry("apple", totalApples);
         Entry threeOranges = new Entry("orange", totalOranges);
-        order.addEntries(Arrays.asList(twoApples, threeOranges));
+        Order order = service.getOrder(Arrays.asList(twoApples, threeOranges));
 
-        assertEquals(2, order.getTotalItems().size());
+        assertEquals(2, order.getItems().size());
 
         BaseGood apple = new Apple();
         BaseGood orange = new Orange();
@@ -76,9 +83,9 @@ class OrderTest {
         int totalOranges = 3;
         Entry twoApples = new Entry("apple", totalApples);
         Entry threeOranges = new Entry("orange", totalOranges);
-        order.addEntries(Arrays.asList(twoApples, threeOranges));
+        Order order = service.getOrder(Arrays.asList(twoApples, threeOranges));
 
-        assertEquals(1, order.getTotalItems().size());
+        assertEquals(1, order.getItems().size());
 
         BaseGood orange = new Orange();
         BigDecimal totalOrangesValue = orange.getPrice().multiply(BigDecimal.valueOf(totalOranges));
@@ -86,14 +93,30 @@ class OrderTest {
     }
 
     @Test
+    void anOrderWithoutItemThrowsIllegalStateException() {
+        String type = "orange";
+        Entry onePositiveEntry = new Entry(type, 1);
+        Entry oneNegativeEntry = new Entry(type, -1);
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            service.getOrder(Arrays.asList(onePositiveEntry, oneNegativeEntry));
+        });
+
+        String expectedMessage = "Order doesn't contain any items.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+
+    @Test
     void orderWithTwoItemsWithQuantityGreaterThanOneApplyingOffer() {
         int totalApples = 15;
         int totalOranges = 20;
         Entry twoApples = new Entry("apple", totalApples);
         Entry threeOranges = new Entry("orange", totalOranges);
-        order.addEntries(Arrays.asList(twoApples, threeOranges));
+        Order order = service.getOrder(Arrays.asList(twoApples, threeOranges));
 
-        assertEquals(2, order.getTotalItems().size());
+        assertEquals(2, order.getItems().size());
 
         BaseGood apple = new Apple();
         BaseGood orange = new Orange();
@@ -111,9 +134,9 @@ class OrderTest {
         BigDecimal totalOrangesValueWithDiscount = orange.getPrice().multiply(BigDecimal.valueOf(orangeQuantityToGetPrice));
         BigDecimal totalValueWithDiscount = totalApplesValueWithDiscount.add(totalOrangesValueWithDiscount);
 
-        assertEquals(totalValueWithDiscount, order.getTotalValueWithDiscount());
+        assertEquals(totalValueWithDiscount, order.getTotalValueAfterDiscount());
 
-        assertEquals(totalValue.subtract(totalValueWithDiscount), order.getTotalDiscount());
+        assertEquals(totalValue.subtract(totalValueWithDiscount), order.getDiscount());
     }
 
 }
