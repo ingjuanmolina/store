@@ -1,6 +1,6 @@
 package com.coding.task.store.service;
 
-import com.coding.task.store.factory.ItemFactory;
+import com.coding.task.store.entity.Product;
 import com.coding.task.store.model.Entry;
 import com.coding.task.store.model.Item;
 import com.coding.task.store.model.Order;
@@ -8,7 +8,6 @@ import com.coding.task.store.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +48,8 @@ public class OrderService {
     }
 
     private void addNewItemToChart(Entry entry) {
-        Item item = ItemFactory.getItem(entry.getItemName(), entry.getQuantity());
+        Product product = productRepository.findByDescriptionIgnoreCase(entry.getItemName());
+        Item item = new Item(product, entry.getQuantity());
         this.chart.put(entry.getItemName().toUpperCase(), item);
     }
 
@@ -62,36 +62,36 @@ public class OrderService {
 
     private Order processOrder() {
         final List<Item> totalItems = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-        BigDecimal valueAfterDiscount = BigDecimal.ZERO;
+        double total = 0;
+        double valueAfterDiscount = 0;
         for (Item item : chart.values()) {
             if (item.getQuantity() > 0) {
                 totalItems.add(item);
-                total = total.add(item.getBaseGood().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-                valueAfterDiscount = valueAfterDiscount.add(getTotalWithOffer(item));
+                total += item.getProduct().getPrice() * item.getQuantity();
+                valueAfterDiscount += getTotalWithOffer(item);
             }
         }
 
         Order order = new Order();
         order.setItems(totalItems);
         order.setTotalValue(total);
-        order.setDiscount(total.subtract(valueAfterDiscount));
+        order.setDiscount(total - valueAfterDiscount);
         order.setTotalValueAfterDiscount(valueAfterDiscount);
 
         return order;
     }
 
-    private BigDecimal getTotalWithOffer(Item item) {
+    private double getTotalWithOffer(Item item) {
         int baseQuantityToSetPrice = 0;
-        if (item.getBaseGood().getDescription().equalsIgnoreCase("orange")) {
+        if (item.getProduct().getDescription().equalsIgnoreCase("orange")) {
             baseQuantityToSetPrice = item.getQuantity() - item.getQuantity() / 2;
         }
 
-        if (item.getBaseGood().getDescription().equalsIgnoreCase("apple")) {
+        if (item.getProduct().getDescription().equalsIgnoreCase("apple")) {
             baseQuantityToSetPrice = (item.getQuantity() / 3) * 2 + item.getQuantity() % 3;
         }
 
-        return item.getBaseGood().getPrice().multiply(BigDecimal.valueOf(baseQuantityToSetPrice));
+        return item.getProduct().getPrice() * baseQuantityToSetPrice;
     }
 
 }

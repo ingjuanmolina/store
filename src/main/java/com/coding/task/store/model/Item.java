@@ -1,20 +1,22 @@
 package com.coding.task.store.model;
 
+import com.coding.task.store.entity.Product;
+
 public class Item {
-    private BaseGood baseGood;
+    private Product product;
     private int quantity;
 
-    public Item(BaseGood baseGood, int quantity) {
-        this.baseGood = baseGood;
+    public Item(Product product, int quantity) {
+        this.product = product;
         this.quantity = quantity;
     }
 
-    public BaseGood getBaseGood() {
-        return baseGood;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setBaseGood(BaseGood baseGood) {
-        this.baseGood = baseGood;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public int getQuantity() {
@@ -23,13 +25,5 @@ public class Item {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "Type=" + baseGood.getDescription() +
-                ", quantity=" + quantity +
-                '}';
     }
 }

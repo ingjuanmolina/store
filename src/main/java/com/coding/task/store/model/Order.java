@@ -1,13 +1,12 @@
 package com.coding.task.store.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class Order {
     private List<Item> items;
-    private BigDecimal value;
-    private BigDecimal discount;
-    private BigDecimal totalValueAfterDiscount;
+    private double value;
+    private double discount;
+    private double totalValueAfterDiscount;
 
     public List<Item> getItems() {
         return items;
@@ -17,27 +16,27 @@ public class Order {
         this.items = items;
     }
 
-    public BigDecimal getTotalValue() {
+    public double getTotalValue() {
         return value;
     }
 
-    public void setTotalValue(BigDecimal totalValue) {
+    public void setTotalValue(double totalValue) {
         this.value = totalValue;
     }
 
-    public BigDecimal getDiscount() {
+    public double getDiscount() {
         return discount;
     }
 
-    public void setDiscount(BigDecimal discount) {
+    public void setDiscount(double discount) {
         this.discount = discount;
     }
 
-    public BigDecimal getTotalValueAfterDiscount() {
+    public double getTotalValueAfterDiscount() {
         return totalValueAfterDiscount;
     }
 
-    public void setTotalValueAfterDiscount(BigDecimal totalValueAfterDiscount) {
+    public void setTotalValueAfterDiscount(double totalValueAfterDiscount) {
         this.totalValueAfterDiscount = totalValueAfterDiscount;
     }
 }
