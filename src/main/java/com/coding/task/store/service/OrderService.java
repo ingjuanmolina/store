@@ -4,6 +4,8 @@ import com.coding.task.store.factory.ItemFactory;
 import com.coding.task.store.model.Entry;
 import com.coding.task.store.model.Item;
 import com.coding.task.store.model.Order;
+import com.coding.task.store.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +17,10 @@ import java.util.Objects;
 
 @Service
 public class OrderService {
+
+    @Autowired
+    private ProductRepository productRepository;
+
     private Map<String, Item> chart;
 
     public Order getOrder(List<Entry> entries) {
