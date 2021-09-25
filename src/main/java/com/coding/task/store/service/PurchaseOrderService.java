@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Service
-public class OrderService {
+public class PurchaseOrderService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -58,6 +58,11 @@ public class OrderService {
 
     private void addNewItemToChart(Entry entry) {
         Product product = productRepository.findByDescriptionIgnoreCase(entry.getItemName());
+
+        if (Objects.isNull(product)) {
+            throw new IllegalArgumentException("Invalid argument. " + entry.getItemName() + " is not a valid item.");
+        }
+
         LineItem lineItem = new LineItem();
         lineItem.setProduct(product);
         lineItem.setQuantity(entry.getQuantity());

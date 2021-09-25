@@ -2,7 +2,7 @@ package com.coding.task.store.controller;
 
 import com.coding.task.store.entity.PurchaseOrder;
 import com.coding.task.store.model.Entry;
-import com.coding.task.store.service.OrderService;
+import com.coding.task.store.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("v1/orders")
-public class OrderController {
+@RequestMapping("v1/purchase-orders")
+public class PurchaseOrderController {
 
-    private final OrderService service;
+    private final PurchaseOrderService service;
 
     @Autowired
-    public OrderController(OrderService service) {
+    public PurchaseOrderController(PurchaseOrderService service) {
         this.service = service;
     }
 
