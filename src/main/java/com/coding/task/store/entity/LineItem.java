@@ -19,8 +19,8 @@ public class LineItem {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "purchase_id")
-    Purchase purchase;
+    @JoinColumn(name = "purchase_order_id")
+    PurchaseOrder purchaseOrder;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,12 +37,13 @@ public class LineItem {
         this.lineItemId = lineItemId;
     }
 
-    public Purchase getPurchase() {
-        return purchase;
+    @JsonIgnore
+    public PurchaseOrder getPurchase() {
+        return purchaseOrder;
     }
 
-    public void setPurchase(Purchase purchase) {
-        this.purchase = purchase;
+    public void setPurchase(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 
     public Product getProduct() {

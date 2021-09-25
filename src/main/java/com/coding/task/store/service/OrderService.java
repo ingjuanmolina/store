@@ -2,11 +2,11 @@ package com.coding.task.store.service;
 
 import com.coding.task.store.entity.LineItem;
 import com.coding.task.store.entity.Product;
-import com.coding.task.store.entity.Purchase;
+import com.coding.task.store.entity.PurchaseOrder;
 import com.coding.task.store.model.Entry;
 import com.coding.task.store.repository.LineItemRepository;
 import com.coding.task.store.repository.ProductRepository;
-import com.coding.task.store.repository.PurchaseRepository;
+import com.coding.task.store.repository.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +24,17 @@ public class OrderService {
     private ProductRepository productRepository;
 
     @Autowired
-    private PurchaseRepository purchaseRepository;
+    private PurchaseOrderRepository purchaseOrderRepository;
 
     @Autowired
     private LineItemRepository lineItemRepository;
 
     private Map<String, LineItem> chart;
 
-    public Purchase getPurchaseOrder(List<Entry> entries) {
+    public PurchaseOrder getPurchaseOrder(List<Entry> entries) {
         this.chart = new HashMap<>();
         entries.forEach(this::validateAndAddItem);
-        Purchase processOrder = processOrder();
+        PurchaseOrder processOrder = processOrder();
 
         if (processOrder.getLineItems().isEmpty()) {
             throw new IllegalStateException("Order doesn't contain any items.");
@@ -70,8 +70,8 @@ public class OrderService {
         this.chart.put(key, itemInChart);
     }
 
-    private Purchase processOrder() {
-        Purchase purchaseOrder = purchaseRepository.save(new Purchase());
+    private PurchaseOrder processOrder() {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.save(new PurchaseOrder());
 
         final Set<LineItem> lineItems = new HashSet<>();
         double total = 0;
@@ -90,7 +90,7 @@ public class OrderService {
         purchaseOrder.setDiscount(total - valueAfterDiscount);
         purchaseOrder.setTotalValueAfterDiscount(valueAfterDiscount);
         purchaseOrder.setLineItems(lineItems);
-        purchaseRepository.save(purchaseOrder);
+        purchaseOrderRepository.save(purchaseOrder);
 
         return purchaseOrder;
     }

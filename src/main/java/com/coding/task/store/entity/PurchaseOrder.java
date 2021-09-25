@@ -7,12 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Set;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-public class Purchase {
+public class PurchaseOrder {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -20,8 +22,13 @@ public class Purchase {
     private double value;
     private double discount;
     private double totalValueAfterDiscount;
+    private Date purchaseOrderDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "purchase", fetch = FetchType.LAZY)
+    public PurchaseOrder() {
+        this.purchaseOrderDate = Date.from(Instant.now());
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "purchaseOrder", fetch = FetchType.LAZY)
     private Set<LineItem> lineItems;
 
     public Long getId() {
@@ -62,5 +69,13 @@ public class Purchase {
 
     public void setLineItems(Set<LineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    public Date getPurchaseOrderDate() {
+        return purchaseOrderDate;
+    }
+
+    public void setPurchaseOrderDate(Date purchaseOrderDate) {
+        this.purchaseOrderDate = purchaseOrderDate;
     }
 }
