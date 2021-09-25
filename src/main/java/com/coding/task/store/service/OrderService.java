@@ -1,18 +1,21 @@
 package com.coding.task.store.service;
 
+import com.coding.task.store.entity.LineItem;
 import com.coding.task.store.entity.Product;
+import com.coding.task.store.entity.Purchase;
 import com.coding.task.store.model.Entry;
-import com.coding.task.store.model.Item;
-import com.coding.task.store.model.Order;
+import com.coding.task.store.repository.LineItemRepository;
 import com.coding.task.store.repository.ProductRepository;
+import com.coding.task.store.repository.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class OrderService {
@@ -20,68 +23,79 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
-    private Map<String, Item> chart;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
 
-    public Order getOrder(List<Entry> entries) {
+    @Autowired
+    private LineItemRepository lineItemRepository;
+
+    private Map<String, LineItem> chart;
+
+    public Purchase getPurchaseOrder(List<Entry> entries) {
         this.chart = new HashMap<>();
-        entries.forEach(this::validateAndSaveItem);
-        Order order = processOrder();
+        entries.forEach(this::validateAndAddItem);
+        Purchase processOrder = processOrder();
 
-        if (order.getItems().isEmpty()) {
+        if (processOrder.getLineItems().isEmpty()) {
             throw new IllegalStateException("Order doesn't contain any items.");
         }
 
-        return order;
+        return processOrder;
     }
 
-    private void validateAndSaveItem(Entry entry) {
+    private void validateAndAddItem(Entry entry) {
         if (Objects.isNull(entry)) {
             return;
         }
 
-        Item item = this.chart.get(entry.getItemName().toUpperCase());
-        if (Objects.isNull(item)) {
+        LineItem lineItem = this.chart.get(entry.getItemName().toUpperCase());
+        if (Objects.isNull(lineItem)) {
             addNewItemToChart(entry);
         } else {
-            updateItemInChart(entry);
+            updateItemInChart(lineItem, entry);
         }
     }
 
     private void addNewItemToChart(Entry entry) {
         Product product = productRepository.findByDescriptionIgnoreCase(entry.getItemName());
-        Item item = new Item(product, entry.getQuantity());
-        this.chart.put(entry.getItemName().toUpperCase(), item);
+        LineItem lineItem = new LineItem();
+        lineItem.setProduct(product);
+        lineItem.setQuantity(entry.getQuantity());
+        this.chart.put(entry.getItemName().toUpperCase(), lineItem);
     }
 
-    private void updateItemInChart (Entry entry) {
+    private void updateItemInChart (LineItem itemInChart, Entry entry) {
         String key = entry.getItemName().toUpperCase();
-        Item itemInChart = this.chart.get(key);
         itemInChart.setQuantity(itemInChart.getQuantity() + entry.getQuantity());
         this.chart.put(key, itemInChart);
     }
 
-    private Order processOrder() {
-        final List<Item> totalItems = new ArrayList<>();
+    private Purchase processOrder() {
+        Purchase purchaseOrder = purchaseRepository.save(new Purchase());
+
+        final Set<LineItem> lineItems = new HashSet<>();
         double total = 0;
         double valueAfterDiscount = 0;
-        for (Item item : chart.values()) {
-            if (item.getQuantity() > 0) {
-                totalItems.add(item);
-                total += item.getProduct().getPrice() * item.getQuantity();
-                valueAfterDiscount += getTotalWithOffer(item);
+        for (LineItem lineItem : chart.values()) {
+            if (lineItem.getQuantity() > 0) {
+                lineItem.setPurchase(purchaseOrder);
+                lineItems.add(lineItemRepository.save(lineItem));
+
+                total += lineItem.getProduct().getPrice() * lineItem.getQuantity();
+                valueAfterDiscount += getTotalWithOffer(lineItem);
             }
         }
 
-        Order order = new Order();
-        order.setItems(totalItems);
-        order.setTotalValue(total);
-        order.setDiscount(total - valueAfterDiscount);
-        order.setTotalValueAfterDiscount(valueAfterDiscount);
+        purchaseOrder.setValue(total);
+        purchaseOrder.setDiscount(total - valueAfterDiscount);
+        purchaseOrder.setTotalValueAfterDiscount(valueAfterDiscount);
+        purchaseOrder.setLineItems(lineItems);
+        purchaseRepository.save(purchaseOrder);
 
-        return order;
+        return purchaseOrder;
     }
 
-    private double getTotalWithOffer(Item item) {
+    private double getTotalWithOffer(LineItem item) {
         int baseQuantityToSetPrice = 0;
         if (item.getProduct().getDescription().equalsIgnoreCase("orange")) {
             baseQuantityToSetPrice = item.getQuantity() - item.getQuantity() / 2;

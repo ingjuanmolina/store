@@ -1,7 +1,7 @@
 package com.coding.task.store.controller;
 
+import com.coding.task.store.entity.Purchase;
 import com.coding.task.store.model.Entry;
-import com.coding.task.store.model.Order;
 import com.coding.task.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("v1/orders")
 public class OrderController {
 
-    private OrderService service;
+    private final OrderService service;
 
     @Autowired
     public OrderController(OrderService service) {
@@ -27,8 +27,8 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Object> createOrder(@RequestBody List<Entry> entries) {
         try {
-            Order order = service.getOrder(entries);
-            return new ResponseEntity<>(order, HttpStatus.OK);
+            Purchase purchaseOrder = service.getPurchaseOrder(entries);
+            return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException exception) {
