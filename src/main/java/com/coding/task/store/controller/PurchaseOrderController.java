@@ -17,17 +17,17 @@ import java.util.List;
 @RequestMapping("v1/purchase-orders")
 public class PurchaseOrderController {
 
-    private final PurchaseOrderService service;
+    private final PurchaseOrderService purchaseOrderService;
 
     @Autowired
-    public PurchaseOrderController(PurchaseOrderService service) {
-        this.service = service;
+    public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
+        this.purchaseOrderService = purchaseOrderService;
     }
 
     @PostMapping
-    public ResponseEntity<Object> createOrder(@RequestBody List<Entry> entries) {
+    public ResponseEntity<Object> createPurchaseOrder(@RequestBody List<Entry> entries) {
         try {
-            PurchaseOrder purchaseOrder = service.getPurchaseOrder(entries);
+            PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(entries);
             return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
