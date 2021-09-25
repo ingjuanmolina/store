@@ -10,6 +10,7 @@ import com.coding.task.store.repository.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,18 +19,20 @@ import java.util.Objects;
 import java.util.Set;
 
 @Service
+@Transactional
 public class PurchaseOrderService {
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private PurchaseOrderRepository purchaseOrderRepository;
-
-    @Autowired
-    private LineItemRepository lineItemRepository;
+    private final LineItemRepository lineItemRepository;
+    private final ProductRepository productRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
 
     private Map<String, LineItem> chart;
+
+    @Autowired
+    public PurchaseOrderService(LineItemRepository lineItemRepository, ProductRepository productRepository, PurchaseOrderRepository purchaseOrderRepository) {
+        this.lineItemRepository = lineItemRepository;
+        this.productRepository = productRepository;
+        this.purchaseOrderRepository = purchaseOrderRepository;
+    }
 
     public PurchaseOrder getPurchaseOrder(List<Entry> entries) {
         this.chart = new HashMap<>();
@@ -81,6 +84,7 @@ public class PurchaseOrderService {
         final Set<LineItem> lineItems = new HashSet<>();
         double total = 0;
         double valueAfterDiscount = 0;
+
         for (LineItem lineItem : chart.values()) {
             if (lineItem.getQuantity() > 0) {
                 lineItem.setPurchase(purchaseOrder);
@@ -89,6 +93,10 @@ public class PurchaseOrderService {
                 total += lineItem.getProduct().getPrice() * lineItem.getQuantity();
                 valueAfterDiscount += getTotalWithOffer(lineItem);
             }
+        }
+
+        if (lineItems.isEmpty()) {
+            throw new IllegalStateException("Order doesn't contain any items.");
         }
 
         purchaseOrder.setValue(total);
