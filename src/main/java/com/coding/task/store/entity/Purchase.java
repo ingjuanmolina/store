@@ -12,16 +12,16 @@ import java.util.Set;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-public class Product {
-
+public class Purchase {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private String description;
-    private Double price;
+    private double value;
+    private double discount;
+    private double totalValueAfterDiscount;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "purchase", fetch = FetchType.LAZY)
     private Set<LineItem> lineItems;
 
     public Long getId() {
@@ -32,20 +32,28 @@ public class Product {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public double getValue() {
+        return value;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setValue(double value) {
+        this.value = value;
     }
 
-    public Double getPrice() {
-        return price;
+    public double getDiscount() {
+        return discount;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public double getTotalValueAfterDiscount() {
+        return totalValueAfterDiscount;
+    }
+
+    public void setTotalValueAfterDiscount(double totalValueAfterDiscount) {
+        this.totalValueAfterDiscount = totalValueAfterDiscount;
     }
 
     public Set<LineItem> getLineItems() {
@@ -54,14 +62,5 @@ public class Product {
 
     public void setLineItems(Set<LineItem> lineItems) {
         this.lineItems = lineItems;
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                '}';
     }
 }
