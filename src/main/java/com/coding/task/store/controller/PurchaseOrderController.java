@@ -6,10 +6,7 @@ import com.coding.task.store.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,10 +21,15 @@ public class PurchaseOrderController {
         this.purchaseOrderService = purchaseOrderService;
     }
 
+    @GetMapping
+    public ResponseEntity<Object> findAll() {
+        return new ResponseEntity<>(purchaseOrderService.findAll(), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Object> createPurchaseOrder(@RequestBody List<Entry> entries) {
         try {
-            PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(entries);
+            PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(entries);
             return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);

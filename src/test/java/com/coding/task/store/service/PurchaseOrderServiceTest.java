@@ -66,7 +66,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedProductRepository.findByDescriptionIgnoreCase("lemon")).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            purchaseOrderService.getPurchaseOrder(Collections.singletonList(invalidEntry));
+            purchaseOrderService.createPurchaseOrder(Collections.singletonList(invalidEntry));
         });
 
         String expectedMessage = "Invalid argument. " + type + " is not a valid item.";
@@ -86,7 +86,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).thenReturn(mockedLineItem);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(Collections.singletonList(oneApple));
+        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Collections.singletonList(oneApple));
 
         assertEquals(1, purchaseOrder.getLineItems().size());
         assertEquals(apple.getPrice(), purchaseOrder.getValue());
@@ -102,7 +102,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(Arrays.asList(oneApple, oneOrange));
+        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(oneApple, oneOrange));
 
         assertEquals(2,purchaseOrder.getLineItems().size());
         assertEquals(apple.getPrice() + orange.getPrice(), purchaseOrder.getValue());
@@ -120,7 +120,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(Arrays.asList(twoApples, threeOranges));
+        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
 
         assertEquals(2, purchaseOrder.getLineItems().size());
 
@@ -142,7 +142,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(Arrays.asList(minusOneApple, threeOranges));
+        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(minusOneApple, threeOranges));
 
         assertEquals(1, purchaseOrder.getLineItems().size());
 
@@ -159,7 +159,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedProductRepository.findByDescriptionIgnoreCase("orange")).thenReturn(orange);
 
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            purchaseOrderService.getPurchaseOrder(Arrays.asList(onePositiveEntry, oneNegativeEntry));
+            purchaseOrderService.createPurchaseOrder(Arrays.asList(onePositiveEntry, oneNegativeEntry));
         });
 
         String expectedMessage = "Order doesn't contain any items.";
@@ -180,7 +180,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrder(Arrays.asList(twoApples, threeOranges));
+        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
 
         assertEquals(2, purchaseOrder.getLineItems().size());
 

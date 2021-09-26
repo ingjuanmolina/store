@@ -34,7 +34,11 @@ public class PurchaseOrderService {
         this.purchaseOrderRepository = purchaseOrderRepository;
     }
 
-    public PurchaseOrder getPurchaseOrder(List<Entry> entries) {
+    public List<PurchaseOrder> findAll() {
+        return purchaseOrderRepository.findAll();
+    }
+
+    public PurchaseOrder createPurchaseOrder(List<Entry> entries) {
         this.chart = new HashMap<>();
         entries.forEach(this::validateAndAddItem);
         PurchaseOrder processOrder = processOrder();
