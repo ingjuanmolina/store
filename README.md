@@ -18,3 +18,6 @@ At startup, **_src/main/resources/data.sql_** file creates a couple of products,
 
 ## Postman tests
 A Postman collection has been added with some basic tests. You can import it to Postman following [these instructions](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-data-into-postman)
+
+## H2 console
+H2 console has been enabled. It can be accessed on http://localhost:8080/h2-console. No password required. 
