@@ -34,7 +34,7 @@ public class PurchaseOrderController {
     public ResponseEntity<Object> createPurchaseOrder(@RequestBody List<Entry> entries) {
         try {
             PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(entries);
-            return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
+            return new ResponseEntity<>(purchaseOrder, HttpStatus.CREATED);
         } catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException exception) {
