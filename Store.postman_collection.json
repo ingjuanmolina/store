@@ -6,13 +6,25 @@
 	},
 	"item": [
 		{
-			"name": "Basic test",
+			"name": "Basic test with random quantity",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"appleQty\",  _.random (-100,100));",
+							"pm.environment.set(\"orangeQty\",  _.random (-100,100));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 4\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 10\n    },\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 11\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 10\n    }\n]",
+					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": {{appleQty}}\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": {{orangeQty}}\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -28,7 +40,207 @@
 					"port": "8080",
 					"path": [
 						"v1",
-						"orders"
+						"purchase-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all purchase orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/purchase-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"purchase-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase  order with invalid entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", () => {",
+							"  pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 1\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 1\n    },\n    {\n        \"itemName\": \"lemon\",\n        \"quantity\": 1\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/purchase-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"purchase-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Total of two items is the sum of each value, no discount",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", () => {",
+							"  pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Total value is the sum of both products, no discount\", () => {",
+							"  const responseJson = pm.response.json();",
+							"  pm.expect(responseJson.value).to.eql(0.85);",
+							"  pm.expect(responseJson.discount).to.eql(0.0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 1\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 1\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/purchase-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"purchase-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Same entries with positive and negative values cancel each other and returns error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 409\", () => {",
+							"  pm.response.to.have.status(409);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 10\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 5\n    },\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": -10\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": -5\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/purchase-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"purchase-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Same entry with positive and negative values is cancelled. Only one item is included",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", () => {",
+							"  pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Total value is ten times the value of an apple, no discount\", () => {",
+							"  const responseJson = pm.response.json();",
+							"  pm.expect(responseJson.value).to.eql(1.2);",
+							"  pm.expect(responseJson.discount).to.eql(0.0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 1\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": 5\n    },\n    {\n        \"itemName\": \"apple\",\n        \"quantity\": 1\n    },\n    {\n        \"itemName\": \"orange\",\n        \"quantity\": -5\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/purchase-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"purchase-orders"
 					]
 				}
 			},
