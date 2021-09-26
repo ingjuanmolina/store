@@ -3,6 +3,7 @@ package com.coding.task.store.service;
 import com.coding.task.store.entity.LineItem;
 import com.coding.task.store.entity.Product;
 import com.coding.task.store.entity.PurchaseOrder;
+import com.coding.task.store.mapper.PurchaseOrderModelMapper;
 import com.coding.task.store.model.Entry;
 import com.coding.task.store.repository.LineItemRepository;
 import com.coding.task.store.repository.ProductRepository;
@@ -11,12 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -34,11 +30,16 @@ public class PurchaseOrderService {
         this.purchaseOrderRepository = purchaseOrderRepository;
     }
 
-    public List<PurchaseOrder> findAll() {
-        return purchaseOrderRepository.findAll();
+    public List<com.coding.task.store.model.PurchaseOrder> findAll() {
+        List<com.coding.task.store.model.PurchaseOrder> purchaseOrders = new LinkedList<>();
+        for (PurchaseOrder entity : purchaseOrderRepository.findAll()) {
+            purchaseOrders.add(PurchaseOrderModelMapper.mapToPurchaseOrderModel(entity));
+        }
+
+        return purchaseOrders;
     }
 
-    public PurchaseOrder createPurchaseOrder(List<Entry> entries) {
+    public com.coding.task.store.model.PurchaseOrder createPurchaseOrder(List<Entry> entries) {
         this.chart = new HashMap<>();
         entries.forEach(this::validateAndAddItem);
         PurchaseOrder processOrder = processOrder();
@@ -47,7 +48,7 @@ public class PurchaseOrderService {
             throw new IllegalStateException("Order doesn't contain any items.");
         }
 
-        return processOrder;
+        return PurchaseOrderModelMapper.mapToPurchaseOrderModel(processOrder);
     }
 
     private void validateAndAddItem(Entry entry) {
@@ -76,7 +77,7 @@ public class PurchaseOrderService {
         this.chart.put(entry.getItemName().toUpperCase(), lineItem);
     }
 
-    private void updateItemInChart (LineItem itemInChart, Entry entry) {
+    private void updateItemInChart(LineItem itemInChart, Entry entry) {
         String key = entry.getItemName().toUpperCase();
         itemInChart.setQuantity(itemInChart.getQuantity() + entry.getQuantity());
         this.chart.put(key, itemInChart);

@@ -1,7 +1,7 @@
 package com.coding.task.store.controller;
 
-import com.coding.task.store.entity.PurchaseOrder;
 import com.coding.task.store.model.Entry;
+import com.coding.task.store.model.PurchaseOrder;
 import com.coding.task.store.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,11 @@ public class PurchaseOrderController {
 
     @GetMapping
     public ResponseEntity<Object> findAll() {
-        return new ResponseEntity<>(purchaseOrderService.findAll(), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(purchaseOrderService.findAll(), HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping

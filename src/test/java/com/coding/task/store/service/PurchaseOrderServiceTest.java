@@ -86,7 +86,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).thenReturn(mockedLineItem);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Collections.singletonList(oneApple));
+        com.coding.task.store.model.PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Collections.singletonList(oneApple));
 
         assertEquals(1, purchaseOrder.getLineItems().size());
         assertEquals(apple.getPrice(), purchaseOrder.getValue());
@@ -102,7 +102,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(oneApple, oneOrange));
+        com.coding.task.store.model.PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(oneApple, oneOrange));
 
         assertEquals(2,purchaseOrder.getLineItems().size());
         assertEquals(apple.getPrice() + orange.getPrice(), purchaseOrder.getValue());
@@ -120,7 +120,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
+        com.coding.task.store.model.PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
 
         assertEquals(2, purchaseOrder.getLineItems().size());
 
@@ -142,7 +142,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(minusOneApple, threeOranges));
+        com.coding.task.store.model.PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(minusOneApple, threeOranges));
 
         assertEquals(1, purchaseOrder.getLineItems().size());
 
@@ -180,7 +180,7 @@ public class PurchaseOrderServiceTest {
         Mockito.when(mockedLineItemRepository.save(any(LineItem.class))).then(AdditionalAnswers.returnsFirstArg());
         Mockito.when(mockedPurchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(mockedPurchaseOrder);
 
-        PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
+        com.coding.task.store.model.PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(Arrays.asList(twoApples, threeOranges));
 
         assertEquals(2, purchaseOrder.getLineItems().size());
 
