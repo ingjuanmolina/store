@@ -14,6 +14,7 @@ public class PurchaseOrderModelMapper {
         purchaseOrderModel.setValue(entity.getValue());
         purchaseOrderModel.setDiscount(entity.getDiscount());
         purchaseOrderModel.setTotalValueAfterDiscount(entity.getTotalValueAfterDiscount());
+        purchaseOrderModel.setPurchaseOrderDate(entity.getPurchaseOrderDate());
 
         return purchaseOrderModel;
     }

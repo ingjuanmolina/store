@@ -10,7 +10,7 @@ public class ProductMapper {
         Product product = new Product();
         product.setId(entity.getId());
         product.setDescription(entity.getDescription());
-        product.setPrice(product.getPrice());
+        product.setPrice(entity.getPrice());
 
         return product;
     }
